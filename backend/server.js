@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS Instructors(
   instructor_id INTEGER PRIMARY KEY,
   instructor_name TEXT,
   expertise TEXT,
-  contact TEXT
+  contact TEXT,
+  password TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Courses(
@@ -47,7 +48,7 @@ CREATE TABLE IF NOT EXISTS Enrollments(
 );
 `)
 
-seedDatabase(db)
+seedDatabase(db, hashPassword)
 
 function hashPassword(password) {
   const salt = randomBytes(16).toString("hex")
@@ -79,7 +80,7 @@ app.post("/users", (req, res) => {
   res.json({ message: "User created" })
 })
 
-app.get("/users", (req,res)=>{
+app.get("/users", (req, res) => {
   const rows = db.prepare("SELECT * FROM Users").all()
   res.json(rows)
 })
@@ -127,7 +128,7 @@ app.post("/login", (req, res) => {
 
 /* ---------- COURSES ---------- */
 
-app.get("/courses", (req,res)=>{
+app.get("/courses", (req, res) => {
   const rows = db.prepare(`
     SELECT Courses.*, Instructors.instructor_name
     FROM Courses
@@ -138,7 +139,7 @@ app.get("/courses", (req,res)=>{
   res.json(rows)
 })
 
-app.post("/courses",(req,res)=>{
+app.post("/courses", (req, res) => {
   const { course_name, instructor_id, duration } = req.body
 
   const stmt = db.prepare(`
@@ -148,17 +149,17 @@ app.post("/courses",(req,res)=>{
 
   stmt.run(course_name, instructor_id, duration)
 
-  res.json({message:"Course added"})
+  res.json({ message: "Course added" })
 })
 
 /* ---------- INSTRUCTORS ---------- */
 
-app.get("/instructors",(req,res)=>{
+app.get("/instructors", (req, res) => {
   const rows = db.prepare("SELECT * FROM Instructors").all()
   res.json(rows)
 })
 
-app.post("/instructors",(req,res)=>{
+app.post("/instructors", (req, res) => {
   const { instructor_name, expertise, contact } = req.body
 
   const stmt = db.prepare(`
@@ -168,12 +169,53 @@ app.post("/instructors",(req,res)=>{
 
   stmt.run(instructor_name, expertise, contact)
 
-  res.json({message:"Instructor added"})
+  res.json({ message: "Instructor added" })
 })
 
+app.post("/instructor/register", (req, res) => {
+
+  const { instructor_name, expertise, contact, password } = req.body
+
+  const hashed = hashPassword(password)
+
+  const stmt = db.prepare(`
+    INSERT INTO Instructors (instructor_name,expertise,contact,password)
+    VALUES (?,?,?,?)
+  `)
+
+  stmt.run(instructor_name, expertise, contact, hashed)
+
+  res.json({ message: "Instructor created" })
+})
+
+
+app.post("/instructor/login", (req, res) => {
+
+  const { contact, password } = req.body
+
+  const instructor = db.prepare(`
+    SELECT * FROM Instructors WHERE contact = ?
+  `).get(contact)
+
+  if (!instructor) {
+    return res.status(401).json({ error: "Instructor not found" })
+  }
+
+  const valid = verifyPassword(password, instructor.password)
+
+  if (!valid) {
+    return res.status(401).json({ error: "Invalid password" })
+  }
+
+  res.json({
+    instructor_id: instructor.instructor_id,
+    instructor_name: instructor.instructor_name
+  })
+
+})
 /* ---------- ENROLLMENTS ---------- */
 
-app.post("/enroll",(req,res)=>{
+app.post("/enroll", (req, res) => {
   const { user_id, course_id } = req.body
 
   const stmt = db.prepare(`
@@ -181,12 +223,12 @@ app.post("/enroll",(req,res)=>{
     VALUES (?,?,date('now'),'active')
   `)
 
-  stmt.run(user_id,course_id)
+  stmt.run(user_id, course_id)
 
-  res.json({message:"Enrollment successful"})
+  res.json({ message: "Enrollment successful" })
 })
 
-app.get("/enrollments",(req,res)=>{
+app.get("/enrollments", (req, res) => {
   const rows = db.prepare(`
     SELECT Enrollments.*, Users.username, Courses.course_name
     FROM Enrollments
@@ -199,6 +241,6 @@ app.get("/enrollments",(req,res)=>{
 
 /* ---------- SERVER ---------- */
 
-app.listen(3001,()=>{
+app.listen(3001, () => {
   console.log("Server running on port 3001")
 })

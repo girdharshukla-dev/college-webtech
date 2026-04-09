@@ -23,12 +23,13 @@ export function seedDatabase(db, hashPassword) {
 
   const insertInstructor = db.prepare(`
     INSERT INTO Instructors (instructor_name,expertise,contact)
-    VALUES (?,?,?)
+    VALUES (?,?,?,?)
   `)
 
-  insertInstructor.run("Dr. Smith","Web Security","smith@test.com")
-  insertInstructor.run("Prof. Adams","React Development","adams@test.com")
-  insertInstructor.run("Dr. Lee","Database Systems","lee@test.com")
+  insertInstructor.run("Dr. Smith", "Web Security", "smith@test.com", hashPassword("1234"))
+  insertInstructor.run("Prof. Adams", "React Development", "adams@test.com", hashPassword("1234"))
+  insertInstructor.run("Dr. Lee", "Database Systems", "lee@test.com", hashPassword("1234"))
+
 
   /* ---------- COURSES ---------- */
 
@@ -37,12 +38,12 @@ export function seedDatabase(db, hashPassword) {
     VALUES (?,?,?)
   `)
 
-  insertCourse.run("Introduction to Web Security",1,6)
-  insertCourse.run("React Fundamentals",2,8)
-  insertCourse.run("Advanced SQL Queries",3,5)
-  insertCourse.run("JavaScript Deep Dive",2,7)
-  insertCourse.run("Backend Development with Node",2,6)
-  insertCourse.run("Database Design",3,4)
+  insertCourse.run("Introduction to Web Security", 1, 6)
+  insertCourse.run("React Fundamentals", 2, 8)
+  insertCourse.run("Advanced SQL Queries", 3, 5)
+  insertCourse.run("JavaScript Deep Dive", 2, 7)
+  insertCourse.run("Backend Development with Node", 2, 6)
+  insertCourse.run("Database Design", 3, 4)
 
   /* ---------- ENROLLMENTS ---------- */
 
@@ -51,7 +52,7 @@ export function seedDatabase(db, hashPassword) {
     VALUES (?,?,date('now'),'active')
   `)
 
-  insertEnroll.run(1,1)
-  insertEnroll.run(1,2)
-  insertEnroll.run(2,3)
+  insertEnroll.run(1, 1)
+  insertEnroll.run(1, 2)
+  insertEnroll.run(2, 3)
 }

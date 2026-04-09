@@ -1,10 +1,10 @@
 import { useState } from "react"
-import { login } from "../api/api"
+import { instructorLogin } from "../api/api"
 import { useNavigate } from "react-router"
 
-export default function Login(){
+export default function InstructorLogin(){
 
-  const [email,setEmail] = useState("")
+  const [contact,setContact] = useState("")
   const [password,setPassword] = useState("")
 
   const navigate = useNavigate()
@@ -13,14 +13,14 @@ export default function Login(){
 
     e.preventDefault()
 
-    const data = await login(email,password)
+    const data = await instructorLogin(contact,password)
 
-    if(data.user_id){
+    if(data.instructor_id){
 
-      localStorage.setItem("user_id",data.user_id)
-      localStorage.setItem("username",data.username)
+      localStorage.setItem("instructor_id",data.instructor_id)
+      localStorage.setItem("instructor_name",data.instructor_name)
 
-      navigate("/dashboard")
+      navigate("/instructor/dashboard")
 
     }
 
@@ -36,13 +36,13 @@ export default function Login(){
       >
 
         <h2 className="text-xl mb-6">
-          Login
+          Instructor Login
         </h2>
 
         <input
           className="w-full mb-4 p-2 bg-black border border-zinc-800 rounded"
-          placeholder="Email"
-          onChange={e=>setEmail(e.target.value)}
+          placeholder="Contact"
+          onChange={e=>setContact(e.target.value)}
         />
 
         <input

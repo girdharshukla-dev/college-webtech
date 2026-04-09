@@ -9,6 +9,8 @@ export default function Dashboard(){
     completed:0
   })
 
+  const [courses,setCourses] = useState([])
+
   useEffect(()=>{
 
     async function load(){
@@ -29,6 +31,8 @@ export default function Dashboard(){
         completed
       })
 
+      setCourses(userEnrollments)
+
     }
 
     load()
@@ -43,12 +47,58 @@ export default function Dashboard(){
         Student Dashboard
       </h1>
 
-      <div className="grid grid-cols-4 gap-6">
+      {/* Stats */}
+
+      <div className="grid grid-cols-4 gap-6 mb-10">
 
         <StatBox label="Courses Enrolled" value={stats.enrolled} />
         <StatBox label="Completed" value={stats.completed} />
         <StatBox label="Active" value={stats.active} />
         <StatBox label="Certificates" value="0" />
+
+      </div>
+
+      {/* Course List */}
+
+      <h2 className="text-xl mb-4">My Courses</h2>
+
+      <div className="shadow rounded">
+
+        <table className="w-full">
+
+          <thead className="border-b">
+            <tr>
+              <th className="text-left p-4">Course</th>
+              <th className="text-left p-4">Status</th>
+              <th className="text-left p-4">Enrollment Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {courses.map(course => (
+
+              <tr key={course.enrollment_id} className="border-b">
+
+                <td className="p-4">
+                  {course.course_name}
+                </td>
+
+                <td className="p-4">
+                  {course.status}
+                </td>
+
+                <td className="p-4">
+                  {course.enrollment_date}
+                </td>
+
+              </tr>
+
+            ))}
+
+          </tbody>
+
+        </table>
 
       </div>
 
