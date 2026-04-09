@@ -2,23 +2,27 @@ import { useState } from "react"
 import { instructorLogin } from "../api/api"
 import { useNavigate } from "react-router"
 
-export default function InstructorLogin(){
+export default function InstructorLogin() {
 
-  const [contact,setContact] = useState("")
-  const [password,setPassword] = useState("")
+  const [contact, setContact] = useState("")
+  const [password, setPassword] = useState("")
 
   const navigate = useNavigate()
 
-  async function handleSubmit(e){
+  async function handleSubmit(e) {
 
     e.preventDefault()
 
-    const data = await instructorLogin(contact,password)
+    const data = await instructorLogin(contact, password)
+    if (data.error) {
+      alert(data.error)
+      return
+    }
 
-    if(data.instructor_id){
+    if (data.instructor_id) {
 
-      localStorage.setItem("instructor_id",data.instructor_id)
-      localStorage.setItem("instructor_name",data.instructor_name)
+      localStorage.setItem("instructor_id", data.instructor_id)
+      localStorage.setItem("instructor_name", data.instructor_name)
 
       navigate("/instructor/dashboard")
 
@@ -26,7 +30,7 @@ export default function InstructorLogin(){
 
   }
 
-  return(
+  return (
 
     <div className="flex justify-center items-center h-screen">
 
@@ -42,14 +46,14 @@ export default function InstructorLogin(){
         <input
           className="w-full mb-4 p-2 bg-black border border-zinc-800 rounded"
           placeholder="Contact"
-          onChange={e=>setContact(e.target.value)}
+          onChange={e => setContact(e.target.value)}
         />
 
         <input
           type="password"
           className="w-full mb-6 p-2 bg-black border border-zinc-800 rounded"
           placeholder="Password"
-          onChange={e=>setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
         />
 
         <button className="w-full bg-red-500 py-2 rounded">

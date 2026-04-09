@@ -22,7 +22,7 @@ export function seedDatabase(db, hashPassword) {
   /* ---------- INSTRUCTORS ---------- */
 
   const insertInstructor = db.prepare(`
-    INSERT INTO Instructors (instructor_name,expertise,contact)
+    INSERT INTO Instructors (instructor_name,expertise,contact, password)
     VALUES (?,?,?,?)
   `)
 

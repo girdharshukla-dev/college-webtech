@@ -2,31 +2,37 @@ import { useState } from "react"
 import { login } from "../api/api"
 import { useNavigate } from "react-router"
 
-export default function Login(){
+export default function Login() {
 
-  const [email,setEmail] = useState("")
-  const [password,setPassword] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   const navigate = useNavigate()
 
-  async function handleSubmit(e){
+  async function handleSubmit(e) {
 
     e.preventDefault()
 
-    const data = await login(email,password)
+    const data = await login(email, password)
 
-    if(data.user_id){
+    if (data.error) {
+      alert(data.error)
+      return
+    }
 
-      localStorage.setItem("user_id",data.user_id)
-      localStorage.setItem("username",data.username)
+    if (data.user_id) {
+
+      localStorage.setItem("user_id", data.user_id)
+      localStorage.setItem("username", data.username)
 
       navigate("/dashboard")
+      window.location.reload()
 
     }
 
   }
 
-  return(
+  return (
 
     <div className="flex justify-center items-center h-screen">
 
@@ -42,14 +48,14 @@ export default function Login(){
         <input
           className="w-full mb-4 p-2 bg-black border border-zinc-800 rounded"
           placeholder="Email"
-          onChange={e=>setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           className="w-full mb-6 p-2 bg-black border border-zinc-800 rounded"
           placeholder="Password"
-          onChange={e=>setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
         />
 
         <button className="w-full bg-red-500 py-2 rounded">
