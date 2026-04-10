@@ -25,6 +25,7 @@ export default function InstructorLogin() {
       localStorage.setItem("instructor_name", data.instructor_name)
 
       navigate("/instructor/dashboard")
+      window.location.reload()
 
     }
 
